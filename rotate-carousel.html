@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>JS Bin</title>
+  <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+  <style type="text/css">
+    ul,li {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    a {
+      text-decoration: none;
+    }
+    .container {
+      position: relative;
+      width: 350px;
+      height: 200px;
+      margin: 30px auto;
+    }
+    .container .imgs img {
+      width: 350px;
+      height: 200px;
+    }
+    .imgs {
+      display: flex;
+      position: relative;
+      left: -350px;
+    }
+    .img-ct {
+      /*border: 1px red solid;*/
+      width: 350px;
+      height: 200px;
+      overflow: hidden;
+    }
+    .playButton {
+      border-radius: 50%;
+      display: inline-block;
+      height: 30px;
+      width: 30px;
+      text-align: center;
+      line-height: 26px;
+      position: absolute;
+      border: 1px #fff solid;
+      color: #fff;
+    }
+    .playButton:hover {
+      background-color: #f6a811;
+      opacity: 0.6;
+      transition: 0.3s;
+    }
+    .playPre {
+      top: 50%;
+      margin-top: -15px;
+      left: 10px;
+    }
+    .playNext {
+      top: 50%;
+      margin-top: -15px;
+      right: 10px;
+    }
+    .bullets {
+      /* border: 1px purple solid; */
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      position: absolute;
+      bottom: 5px;
+    }
+    .bullets li{
+      border: 1px #fff solid;  
+      height: 10px;
+      width: 40px;
+      margin: 0 5px 0 5px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .bullets li:hover {
+      opacity: 0.5;
+      transition: 0.3s;
+    }
+    .active {
+      background-color: #d3901d;
+      opacity: 0.8
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="img-ct">
+      <ul class="imgs">
+        <li id="img0">
+          <a href="#"><img src="https://timgsa.baidu.com/timg?image&quality=80&size=b10000_10000&sec=1523068428&di=dc225fea1a3e6d14401021c4a13ca6ff&src=http://compass.xboxlive.com/assets/1d/59/1d598d2f-6cf4-429f-9fba-8efdce3325d1.jpg?n=tom-clancys-the-division_largetout_719x404.jpg" alt=""></a>
+        </li>
+        <li id="img1">
+          <a href="#"><img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1523078196330&di=84f5c449ed0457f4756addd0b0bf48e0&imgtype=0&src=http%3A%2F%2Fi2.hdslb.com%2Fbfs%2Farchive%2F60ed4f935c5146671e4acb955754449bc90271af.png" alt=""></a>
+        </li>
+        <li id="img2">
+          <a href="#"><img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1523078290417&di=92568011cbfe2ca74f4633ab33714fe2&imgtype=0&src=http%3A%2F%2Fwww.3dmgame.com%2Fuploads%2Fallimg%2F151207%2F302_151207234841_1.jpg" alt=""></a>
+        </li>
+        <li id="img3">
+          <a href="#"><img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1523085334079&di=96b63ea37a088dac568ea22544a97847&imgtype=0&src=http%3A%2F%2Fimg.wanyx.com%2FUploads%2Fueditor%2Fimage%2F20160713%2F1468378857904388.jpg" alt=""></a>
+        </li>
+      </ul>
+    </div>
+    <a href="#" class="playPre playButton"><<</a>
+    <a href="#" class="playNext playButton">>></a>
+    <ul class="bullets">
+      <li class="active"></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+  </div>
+  <script type="text/javascript">
+    var $imgs = $('.imgs img')
+    var $imgsCt = $('.imgs')
+    var imgCount = $imgs.length
+    var imgWidth = $imgs.width()
+    var pageIndex = 0
+    var isAnimeted = false
+
+    setInterval(function(){
+      playNext()
+    },2000)
+
+    $('.imgs').append($('#img0').clone())
+    $('.imgs').prepend($('#img3').clone())
+    $('.playNext').on('click',function(){
+      if(!isAnimeted){
+        playNext()
+      }
+      
+    })
+    $('.playPre').on('click',function(){
+      if(!isAnimeted){
+        playPre()
+      }
+    })
+    $('.bullets').on('click','li',function(){
+      var $this = $(this)
+      var clickIndex = $this.index()
+      if(clickIndex > pageIndex){
+        $imgsCt.animate({left: '-='+((clickIndex - pageIndex) * imgWidth)})
+        pageIndex = clickIndex
+        setBullet()
+      }else if(clickIndex < pageIndex){
+        $imgsCt.animate({left: '+='+((pageIndex - clickIndex) * imgWidth)})
+        pageIndex = clickIndex
+        setBullet()
+      }
+    })
+
+    function playNext(){
+      isAnimeted = true
+      $('.imgs').animate({left: '-='+imgWidth},function(){
+        pageIndex++
+        if(pageIndex === imgCount){
+          pageIndex = 0
+          $('.imgs').css({'left':'-350px'})
+        }
+        setBullet()
+        isAnimeted = false
+      })
+    }
+    function playPre(){
+       isAnimeted = true
+      $('.imgs').animate({left: '+='+imgWidth},function(){
+        pageIndex--
+        if(pageIndex === -1){
+          pageIndex = 3
+          $('.imgs').css({'left': -(imgWidth*imgCount)})
+        }
+        setBullet()
+        isAnimeted = false
+      })
+      console.log(pageIndex)
+    }
+    function setBullet(){
+      console.log('show')
+      $('.bullets li').removeClass('active')
+                      .eq(pageIndex)
+                      .addClass('active')
+    }
+    function showBulletImg(){
+
+    }
+  </script>
+</body>
+</html>
