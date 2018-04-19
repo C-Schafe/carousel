@@ -113,79 +113,125 @@
       <li></li>
     </ul>
   </div>
+
+  <div class="container">
+    <div class="img-ct">
+      <ul class="imgs">
+        <li id="img0">
+          <a href="#"><img src="https://timgsa.baidu.com/timg?image&quality=80&size=b10000_10000&sec=1523068428&di=dc225fea1a3e6d14401021c4a13ca6ff&src=http://compass.xboxlive.com/assets/1d/59/1d598d2f-6cf4-429f-9fba-8efdce3325d1.jpg?n=tom-clancys-the-division_largetout_719x404.jpg" alt=""></a>
+        </li>
+        <li id="img1">
+          <a href="#"><img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1523078196330&di=84f5c449ed0457f4756addd0b0bf48e0&imgtype=0&src=http%3A%2F%2Fi2.hdslb.com%2Fbfs%2Farchive%2F60ed4f935c5146671e4acb955754449bc90271af.png" alt=""></a>
+        </li>
+        <li id="img2">
+          <a href="#"><img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1523078290417&di=92568011cbfe2ca74f4633ab33714fe2&imgtype=0&src=http%3A%2F%2Fwww.3dmgame.com%2Fuploads%2Fallimg%2F151207%2F302_151207234841_1.jpg" alt=""></a>
+        </li>
+        <li id="img3">
+          <a href="#"><img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1523085334079&di=96b63ea37a088dac568ea22544a97847&imgtype=0&src=http%3A%2F%2Fimg.wanyx.com%2FUploads%2Fueditor%2Fimage%2F20160713%2F1468378857904388.jpg" alt=""></a>
+        </li>
+      </ul>
+    </div>
+    <a href="#" class="playPre playButton"><<</a>
+    <a href="#" class="playNext playButton">>></a>
+    <ul class="bullets">
+      <li class="active"></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+  </div>
+
+
   <script type="text/javascript">
-    var $imgs = $('.imgs img')
-    var $imgsCt = $('.imgs')
-    var imgCount = $imgs.length
-    var imgWidth = $imgs.width()
-    var pageIndex = 0
-    var isAnimeted = false
-
-    setInterval(function(){
-      playNext()
-    },2000)
-
-    $('.imgs').append($('#img0').clone())
-    $('.imgs').prepend($('#img3').clone())
-    $('.playNext').on('click',function(){
-      if(!isAnimeted){
-        playNext()
+var _Carousel = function(){
+      function Carousel($node){
+        this.$node = $node
+        this.init()
+        this.bind()
       }
-      
-    })
-    $('.playPre').on('click',function(){
-      if(!isAnimeted){
-        playPre()
-      }
-    })
-    $('.bullets').on('click','li',function(){
-      var $this = $(this)
-      var clickIndex = $this.index()
-      if(clickIndex > pageIndex){
-        $imgsCt.animate({left: '-='+((clickIndex - pageIndex) * imgWidth)})
-        pageIndex = clickIndex
-        setBullet()
-      }else if(clickIndex < pageIndex){
-        $imgsCt.animate({left: '+='+((pageIndex - clickIndex) * imgWidth)})
-        pageIndex = clickIndex
-        setBullet()
-      }
-    })
 
-    function playNext(){
-      isAnimeted = true
-      $('.imgs').animate({left: '-='+imgWidth},function(){
-        pageIndex++
-        if(pageIndex === imgCount){
-          pageIndex = 0
-          $('.imgs').css({'left':'-350px'})
+      Carousel.prototype.init = function(){
+        this.$imgs = this.$node.find('.imgs img')
+        this.$imgsCt = this.$node.find('.imgs')
+        this.imgCount = this.$imgs.length
+        this.imgWidth = this.$imgs.width()
+        this.pageIndex = 0
+        this.isAnimeted = false
+        this.$node.find('.imgs').append($('#img0').clone())
+        this.$node.find('.imgs').prepend($('#img3').clone())
+      }
+
+      Carousel.prototype.bind = function(){
+        var _this = this
+        this.$node.find('.playNext').on('click',function(){
+          if(!_this.isAnimeted){
+            _this.playNext()
+          }
+        })
+        this.$node.find('.playPre').on('click',function(){
+          if(!_this.isAnimeted){
+            _this.playPre()
+          }
+        })
+        this.$node.find('.bullets').on('click','li',function(){
+          var $this = $(this)
+          var clickIndex = $this.index()
+          if(clickIndex > _this.pageIndex){
+            _this.$imgsCt.animate({left: '-='+((clickIndex - _this.pageIndex) * _this.imgWidth)})
+            _this.pageIndex = clickIndex
+            _this.setBullet()
+          }else if(clickIndex < _this.pageIndex){
+            _this.$imgsCt.animate({left: '+='+((_this.pageIndex - clickIndex) * _this.imgWidth)})
+            _this.pageIndex = clickIndex
+            _this.setBullet()
+          }
+        })
+      }
+
+      Carousel.prototype.playNext = function(){
+        this.isAnimeted = true
+        var _this = this
+        this.$node.find('.imgs').animate({left: '-='+ _this.imgWidth},function(){
+          _this.pageIndex++
+          if( _this.pageIndex === _this.imgCount){
+            _this.pageIndex = 0
+            _this.$node.find('.imgs').css({'left':'-350px'})
+          }
+          _this.setBullet()
+          _this.isAnimeted = false
+        })
+      }
+
+      Carousel.prototype.playPre = function(){
+        var _this = this
+        _this.isAnimeted = true
+        this.$node.find('.imgs').animate({left: '+='+ _this.imgWidth},function(){
+          _this.pageIndex--
+          if( _this.pageIndex === -1){
+            _this.pageIndex = 3
+            _this.$node.find('.imgs').css({'left': -(_this.imgWidth*_this.imgCount)})
+          }
+          _this.setBullet()
+          _this.isAnimeted = false
+        })
+      }
+
+      Carousel.prototype.setBullet = function(){
+        this.$node.find('.bullets li').removeClass('active')
+                        .eq(this.pageIndex)
+                        .addClass('active')
+      }
+
+      return {
+        launch: function($node){
+          $node.each(function(index,element){
+            new Carousel($(element))
+          })
         }
-        setBullet()
-        isAnimeted = false
-      })
-    }
-    function playPre(){
-       isAnimeted = true
-      $('.imgs').animate({left: '+='+imgWidth},function(){
-        pageIndex--
-        if(pageIndex === -1){
-          pageIndex = 3
-          $('.imgs').css({'left': -(imgWidth*imgCount)})
-        }
-        setBullet()
-        isAnimeted = false
-      })
-      console.log(pageIndex)
-    }
-    function setBullet(){
-      console.log('show')
-      $('.bullets li').removeClass('active')
-                      .eq(pageIndex)
-                      .addClass('active')
-    }
-    function showBulletImg(){
+      }
+    }()
 
-    }
+    _Carousel.launch($('.container')) 
   </script>
 </body>
 </html>
